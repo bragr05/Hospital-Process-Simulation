@@ -10,6 +10,12 @@ void esperar(int segundos){
 	std::this_thread::sleep_for(std::chrono::seconds(segundos));
 }
 
+void limpiarBufferTeclas(){
+	while (_kbhit()) {
+        _getch();
+    }
+}
+
 
 
 // Metodos procesos
@@ -23,74 +29,114 @@ void procesoCitas(){
 	char interrupcionUsuario;
 	bool salirProceso = false;
 	
-	// Reccorrer los pacientes del 0 1 10
 	for(int numPaciente=0; numPaciente<=10;numPaciente++){
 		
-		// Por cada iteracion del for (pacientes) tendra un tiempoAtencion de 5 tiempos inicializado en 0 y aumenta cada segundo con metodo esperar(1)
-		while(tiempoAtencion <= 5){
-			system("cls");
-			printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoAtencion);
-			printf("Atentiendo paciente numero %d\n", numPaciente);
-			esperar(1);
+		while(tiempoAtencion <= 5){	
 			
-			
-			// _kbhit() permite saber si se tecleo sin interrumpir el proceso
+
 			if(_kbhit()){
 				interrupcionUsuario = _getch();
 				interrupcionUsuario = toupper(interrupcionUsuario);
 				
-				// romper el bucle while de ese paciente
 				if(interrupcionUsuario == 'I'){
 					system("cls");
 					printf("INTERRUPCION POR USUARIO\n");
+					printf("TIEMPO ATENCION PACIENTE: %d\n", tiempoAtencion);
 					printf("Interrupcion generada atendiendo al paciente numero %d\n", numPaciente);
-					esperar(2);
+					system("pause");
 					salirProceso = true;
 					break;
 				}
+			
 			}
 			
-			tiempoAtencion++;
+			system("cls");
+			printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoAtencion);
+			printf("Atentiendo paciente numero %d\n\n", numPaciente);
+			printf("Presione tecla I para terminar el proceso\n");
 			
+			tiempoAtencion++;
+			esperar(1);
 		}
 		
-		// romper el for de los demas pacientes si uno de estos presiono la tecla I
 		if(salirProceso){
 			break;
 		}
 		
 		
-		// Si no se presiono la tecla I y llega los 15 tiempos entonces su proceso se realizo con exito	
-		if(tiempoAtencion == 5){
+		if(tiempoAtencion >= 5){
 			system("cls");
 			printf("INTERRUPCION NORMAL\n");
 			printf("Se atendio con exito al paciente numero %d\n", numPaciente);
-			esperar(3);
+			esperar(2);
 		}	
 		
 		
 		totalPacientesAtenididos = numPaciente;
 		
-		// Reiniciar el tiempo para los demas pacientes si para el anterior no existio una interrupcion
+		// Reiniciar tiempo para otros pacientes
 		tiempoAtencion = 0;
 	}
 	
 	
-	// Si no exisitio ninguna interrupcion durante el for entonces se atendio a todos con exito
 	if(totalPacientesAtenididos == 10){
 		system("cls");
 		printf("INTERRUPCION NORMAL\n");
 		printf("Todos los pacientes fueron atentidos con exito!");
-		esperar(3);
+		system("pause");
 	}	
 }
 
 
-void procesoEmergencias(){
-	system("cls");
-	printf("2-Proceso atencion de emergencias\n");
-	esperar(1);
+void procesoEmergencias() {
+    system("cls");
+    printf("2-Proceso atencion de emergencias\n");
+    esperar(1);
+
+    int totalPacientesAtendidos = 0;
+    int tiempoProceso = 0;
+    char interrupcionUsuario;
+    int numPaciente = 0;
+
+    while (tiempoProceso <= 25 && totalPacientesAtendidos < 10) {
+
+        if (_kbhit()) {
+            interrupcionUsuario = _getch();
+            interrupcionUsuario = toupper(interrupcionUsuario);
+
+            if (interrupcionUsuario == 'S' && tiempoProceso >= 20) {
+                system("cls");
+                printf("INTERRUPCION POR USUARIO\n");
+                printf("TIEMPO PROCESO: %d\n", tiempoProceso);
+                printf("Interrupcion generada atendiendo al paciente numero %d\n", numPaciente);
+                esperar(4);
+                break;
+            }else if(interrupcionUsuario == 'P'){
+            	numPaciente++;
+            	totalPacientesAtendidos = numPaciente;
+			}
+        }
+        
+        system("cls");
+        printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoProceso);
+        printf("Atendiendo paciente numero %d\n\n", numPaciente);
+        
+        printf("Presione tecla P para avanzar paciente\n");
+        printf("A los 20 tiempos puede finalizar el proceso con la tecla S\n");
+        
+        limpiarBufferTeclas();
+        
+		esperar(1);
+        tiempoProceso++;
+    }
+    
+    system("cls");
+    printf("INTERRUPCION NORMAL\n");
+    printf("TIEMPO TOTAL PROCESO: %d\n", tiempoProceso - 1);
+	printf("PACIENTES TOTALES ATENDIDOS: %d\n", totalPacientesAtendidos);
+	system("pause");
 }
+
 
 
 void procesoCirujias(){
