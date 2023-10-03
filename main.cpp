@@ -4,8 +4,11 @@
 #include <cctype>
 #include <thread>
 #include <chrono>
+#include <queue>
 
-//Metodos generales
+using namespace std;
+
+// Metodos generales
 void esperar(int segundos){
 	std::this_thread::sleep_for(std::chrono::seconds(segundos));
 }
@@ -139,12 +142,91 @@ void procesoEmergencias() {
 
 
 
+
+// Estructura de datos para representar un paciente dentro de la cola Proceso III
+struct Pacientes{
+	int numeroPaciente;
+	int tiempoAtencion;
+	string TipoAtencion;
+};
+
 void procesoCirujias(){
 	system("cls");
 	printf("3-Proceso atencion de cirugias\n");
 	esperar(1);
-}
+	
+	int quantum = 5;
+	
+	
+	queue<Pacientes> colaCirujias;
+	
+	colaCirujias.push({1, 7, "Rojo"});
+	colaCirujias.push({2, 8, "Normal"});
+	colaCirujias.push({3, 5, "Normal"});
+	colaCirujias.push({4, 11, "Rojo"});
+	colaCirujias.push({5, 9, "Verde"});
+	colaCirujias.push({6, 3, "Normal"});
+	
+	
+	int tiempoRestantePacienteActual;
+	int tiempoTotalAtencionPaciente;
+	
+	while (!colaCirujias.empty()) 
+	{
+	    Pacientes pacienteActual = colaCirujias.front();
+	    
+	    // Elimianr el pacienteActual temporalmente
+	    colaCirujias.pop();
+	    
+	    
+	    
+	    if (pacienteActual.TipoAtencion == "Rojo" || pacienteActual.TipoAtencion == "Verde"){
+	    	
+	    	
+		}else{
+			
+			int tiempoSobrante;
+			
+			// Validar casos donde paciente tiempoAtencion es menor / mayor que el quantum (5)
+			if(pacienteActual.tiempoAtencion >= quantum){
+				// Ejem: 8 - 5 = 3 de tiempo sobrante;
+				tiempoSobrante = pacienteActual.tiempoAtencion - quantum;
+				tiempoRestantePacienteActual = quantum;
+				tiempoTotalAtencionPaciente = quantum;
+			}else{
+				// Ejem: 5 - 3 = 2 de tiempo sobrante;
+				tiempoSobrante = quantum - pacienteActual.tiempoAtencion;
+				tiempoRestantePacienteActual = pacienteActual.tiempoAtencion;
+				tiempoTotalAtencionPaciente = pacienteActual.tiempoAtencion;;
+			}		
 
+			while(tiempoRestantePacienteActual >= 0){		
+				system("cls");
+				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
+				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
+				printf("TIEMPO TOTAL PARA SER ATENDIDO: %d\n", tiempoTotalAtencionPaciente);
+				printf("TIEMPO RESTANTE: %d\n", tiempoRestantePacienteActual);
+				
+				
+				esperar(1);
+				tiempoRestantePacienteActual-=1;
+			}
+			
+			// Como es normal no se agrega de nuevo a la Queue porque no necesita de su tiempo restante
+			system("cls");
+			printf("INTERRUPCION NORMAL\n");
+			printf("PACIENTE NUMERO %d ATENDIDO CORRECTAMENTE\n", pacienteActual.numeroPaciente);
+			printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
+			printf("Nota: Por ser paciente normal no necesitara su tiempo sobrante\n");
+			esperar(5);
+
+		}
+
+		tiempoRestantePacienteActual=0;
+		
+	}
+
+}
 
 
 int main(){
@@ -158,13 +240,14 @@ int main(){
 		printf("1-Proceso atencion de citas\n");
 		printf("2-Proceso atencion de emergencias\n");
 		printf("3-Proceso atencion de cirugias\n");
-		printf("E-Finalizar proceso\n");
+		printf("A-Finalizar proceso\n");
 		
 		procesoSeleccionado = _getch();
 		procesoSeleccionado = toupper(procesoSeleccionado);
 		
 		
-		if (procesoSeleccionado == 'E') {
+		if (procesoSeleccionado == 'A') {
+			
             break; 
         }
 		
@@ -188,6 +271,8 @@ int main(){
 		
 		contadorBucle++;
 	};
+	
+	printf("Procesos Finalizados\n");
 	return 0;
 	
 }
