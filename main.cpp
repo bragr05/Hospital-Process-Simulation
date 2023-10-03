@@ -168,48 +168,78 @@ void procesoCirujias(){
 	colaCirujias.push({6, 3, "Normal"});
 	
 	
-	int tiempoRestantePacienteActual;
-	int tiempoTotalAtencionPaciente;
+	int tiempoRestanteAtencion;
+	int tiempoUsadoTotalSala;
 	
 	while (!colaCirujias.empty()) 
 	{
 	    Pacientes pacienteActual = colaCirujias.front();
 	    
-	    // Elimianr el pacienteActual temporalmente
+	    // Eliminar el pacienteActual temporalmente
 	    colaCirujias.pop();
 	    
+		int tiempoSobrante;
+			
+		// Validar casos donde paciente tiempoAtencion es menor / mayor que el quantum (5)
+		if(pacienteActual.tiempoAtencion >= quantum){
+			// Ejem: 7 - 5 = 2 de tiempo sobrante;
+			tiempoSobrante = pacienteActual.tiempoAtencion - quantum;
+			tiempoRestanteAtencion = quantum;
+		}else{
+			// No necesita de mas iteraciones para completar la cirujia
+			tiempoSobrante = 0;
+			tiempoRestanteAtencion = pacienteActual.tiempoAtencion;
+		}
+		
+		tiempoUsadoTotalSala+=tiempoRestanteAtencion;
 	    
 	    
 	    if (pacienteActual.TipoAtencion == "Rojo" || pacienteActual.TipoAtencion == "Verde"){
-	    	
-	    	
-		}else{
-			
-			int tiempoSobrante;
-			
-			// Validar casos donde paciente tiempoAtencion es menor / mayor que el quantum (5)
-			if(pacienteActual.tiempoAtencion >= quantum){
-				// Ejem: 8 - 5 = 3 de tiempo sobrante;
-				tiempoSobrante = pacienteActual.tiempoAtencion - quantum;
-				tiempoRestantePacienteActual = quantum;
-				tiempoTotalAtencionPaciente = quantum;
-			}else{
-				// Ejem: 5 - 3 = 2 de tiempo sobrante;
-				tiempoSobrante = quantum - pacienteActual.tiempoAtencion;
-				tiempoRestantePacienteActual = pacienteActual.tiempoAtencion;
-				tiempoTotalAtencionPaciente = pacienteActual.tiempoAtencion;;
-			}		
-
-			while(tiempoRestantePacienteActual >= 0){		
+	    	 	
+			while(tiempoRestanteAtencion >= 0 && pacienteActual.tiempoAtencion != 0){		
 				system("cls");
 				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
 				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
-				printf("TIEMPO TOTAL PARA SER ATENDIDO: %d\n", tiempoTotalAtencionPaciente);
-				printf("TIEMPO RESTANTE: %d\n", tiempoRestantePacienteActual);
+				printf("TIEMPO QUE NECESITA EL PACIENTE PARA CIRUJIA: %d\n", pacienteActual.tiempoAtencion);
+				printf("TIEMPO RESTANTE: %d\n", tiempoRestanteAtencion);
 				
 				
 				esperar(1);
-				tiempoRestantePacienteActual-=1;
+				tiempoRestanteAtencion-=1;
+			}
+			
+			// Para saber si el proceso de cirujia continua o termino
+			if(tiempoSobrante != 0){
+				system("cls");
+				printf("INTERRUPCION NORMAL\n");
+				printf("PACIENTE NUMERO %d EN PROCESO DE ATENCION\n", pacienteActual.numeroPaciente);
+				printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
+				esperar(5);
+				
+				pacienteActual.tiempoAtencion = tiempoSobrante;
+				colaCirujias.push(pacienteActual);
+			}else{
+				system("cls");
+				printf("INTERRUPCION NORMAL\n");
+				printf("PACIENTE NUMERO %d ATENDIDO CORRECTAMENTE\n", pacienteActual.numeroPaciente);
+				printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
+				esperar(5);
+			}
+				
+	    	
+		}
+		else{
+			
+			while(tiempoRestanteAtencion >= 0){		
+				system("cls");
+				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
+				printf("TIEMPO QUE NECESITA EL PACIENTE PARA CIRUJIA: %d\n", pacienteActual.tiempoAtencion);
+				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
+				printf("TIEMPO RESTANTE: %d\n", tiempoRestanteAtencion);
+				
+				
+				esperar(1);
+				tiempoRestanteAtencion-=1;
 			}
 			
 			// Como es normal no se agrega de nuevo a la Queue porque no necesita de su tiempo restante
@@ -222,9 +252,15 @@ void procesoCirujias(){
 
 		}
 
-		tiempoRestantePacienteActual=0;
+		// Reiniciar tiempos restantes para demas pacientes e iteraciones
+		tiempoRestanteAtencion=0;
 		
 	}
+	
+	system("cls");
+    printf("INTERRUPCION NORMAL\n");
+    printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %d tiempos\n", tiempoUsadoTotalSala);
+	system("pause");
 
 }
 
