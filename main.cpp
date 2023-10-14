@@ -9,39 +9,44 @@
 using namespace std;
 
 // Metodos generales
-void esperar(int segundos){
+void esperar(int segundos)
+{
 	std::this_thread::sleep_for(std::chrono::seconds(segundos));
 }
 
-void limpiarBufferTeclas(){
-	while (_kbhit()) {
-        _getch();
-    }
+void limpiarBufferTeclas()
+{
+	while (_kbhit())
+	{
+		_getch();
+	}
 }
 
-
-
 // Metodos procesos
-void procesoCitas(){
+void procesoCitas()
+{
 	system("cls");
 	printf("1-Proceso atencion de cita seleccionado \n");
 	esperar(1);
-	
+
 	int totalPacientesAtenididos = 0;
 	int tiempoAtencion = 0;
 	char interrupcionUsuario;
 	bool salirProceso = false;
-	
-	for(int numPaciente=0; numPaciente<=10;numPaciente++){
-		
-		while(tiempoAtencion <= 5){	
-			
 
-			if(_kbhit()){
+	for (int numPaciente = 0; numPaciente <= 10; numPaciente++)
+	{
+
+		while (tiempoAtencion <= 5)
+		{
+
+			if (_kbhit())
+			{
 				interrupcionUsuario = _getch();
 				interrupcionUsuario = toupper(interrupcionUsuario);
-				
-				if(interrupcionUsuario == 'I'){
+
+				if (interrupcionUsuario == 'I')
+				{
 					system("cls");
 					printf("INTERRUPCION POR USUARIO\n");
 					printf("TIEMPO ATENCION PACIENTE: %d\n", tiempoAtencion);
@@ -50,198 +55,204 @@ void procesoCitas(){
 					salirProceso = true;
 					break;
 				}
-			
 			}
-			
+
 			system("cls");
 			printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoAtencion);
 			printf("Atentiendo paciente numero %d\n\n", numPaciente);
 			printf("Presione tecla I para terminar el proceso\n");
-			
+
 			tiempoAtencion++;
 			esperar(1);
 		}
-		
-		if(salirProceso){
+
+		if (salirProceso)
+		{
 			break;
 		}
-		
-		
-		if(tiempoAtencion >= 5){
+
+		if (tiempoAtencion >= 5)
+		{
 			system("cls");
 			printf("INTERRUPCION NORMAL\n");
 			printf("Se atendio con exito al paciente numero %d\n", numPaciente);
 			esperar(2);
-		}	
-		
-		
+		}
+
 		totalPacientesAtenididos = numPaciente;
-		
+
 		// Reiniciar tiempo para otros pacientes
 		tiempoAtencion = 0;
 	}
-	
-	
-	if(totalPacientesAtenididos == 10){
+
+	if (totalPacientesAtenididos == 10)
+	{
 		system("cls");
 		printf("INTERRUPCION NORMAL\n");
 		printf("Todos los pacientes fueron atentidos con exito!");
 		system("pause");
-	}	
+	}
 }
 
+void procesoEmergencias()
+{
+	system("cls");
+	printf("2-Proceso atencion de emergencias\n");
+	esperar(1);
 
-void procesoEmergencias() {
-    system("cls");
-    printf("2-Proceso atencion de emergencias\n");
-    esperar(1);
+	int totalPacientesAtendidos = 0;
+	int tiempoProceso = 0;
+	char interrupcionUsuario;
+	int numPaciente = 0;
 
-    int totalPacientesAtendidos = 0;
-    int tiempoProceso = 0;
-    char interrupcionUsuario;
-    int numPaciente = 0;
+	while (tiempoProceso <= 25 && totalPacientesAtendidos < 10)
+	{
 
-    while (tiempoProceso <= 25 && totalPacientesAtendidos < 10) {
+		if (_kbhit())
+		{
+			interrupcionUsuario = _getch();
+			interrupcionUsuario = toupper(interrupcionUsuario);
 
-        if (_kbhit()) {
-            interrupcionUsuario = _getch();
-            interrupcionUsuario = toupper(interrupcionUsuario);
-
-            if (interrupcionUsuario == 'S' && tiempoProceso >= 20) {
-                system("cls");
-                printf("INTERRUPCION POR USUARIO\n");
-                printf("TIEMPO PROCESO: %d\n", tiempoProceso);
-                printf("Interrupcion generada atendiendo al paciente numero %d\n", numPaciente);
-                esperar(4);
-                break;
-            }else if(interrupcionUsuario == 'P'){
-            	numPaciente++;
-            	totalPacientesAtendidos = numPaciente;
+			if (interrupcionUsuario == 'S' && tiempoProceso >= 20)
+			{
+				system("cls");
+				printf("INTERRUPCION POR USUARIO\n");
+				printf("TIEMPO PROCESO: %d\n", tiempoProceso);
+				printf("Interrupcion generada atendiendo al paciente numero %d\n", numPaciente);
+				esperar(4);
+				break;
 			}
-        }
-        
-        system("cls");
-        printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoProceso);
-        printf("Atendiendo paciente numero %d\n\n", numPaciente);
-        
-        printf("Presione tecla P para avanzar paciente\n");
-        printf("A los 20 tiempos puede finalizar el proceso con la tecla S\n");
-        
-        limpiarBufferTeclas();
-        
+			else if (interrupcionUsuario == 'P')
+			{
+				numPaciente++;
+				totalPacientesAtendidos = numPaciente;
+			}
+		}
+
+		system("cls");
+		printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoProceso);
+		printf("Atendiendo paciente numero %d\n\n", numPaciente);
+
+		printf("Presione tecla P para avanzar paciente\n");
+		printf("A los 20 tiempos puede finalizar el proceso con la tecla S\n");
+
+		limpiarBufferTeclas();
+
 		esperar(1);
-        tiempoProceso++;
-    }
-    
-    system("cls");
-    printf("INTERRUPCION NORMAL\n");
-    printf("TIEMPO TOTAL PROCESO: %d\n", tiempoProceso - 1);
+		tiempoProceso++;
+	}
+
+	system("cls");
+	printf("INTERRUPCION NORMAL\n");
+	printf("TIEMPO TOTAL PROCESO: %d\n", tiempoProceso - 1);
 	printf("PACIENTES TOTALES ATENDIDOS: %d\n", totalPacientesAtendidos);
 	system("pause");
 }
 
-
-
-
 // Estructura de datos para representar un paciente dentro de la cola Proceso III
-struct Pacientes{
+struct Pacientes
+{
 	int numeroPaciente;
 	int tiempoAtencion;
 	string TipoAtencion;
 };
 
-void procesoCirujias(){
+void procesoCirujias()
+{
 	system("cls");
 	printf("3-Proceso atencion de cirugias\n");
 	esperar(1);
-	
+
 	int quantum = 5;
-	
-	
+
 	queue<Pacientes> colaCirujias;
-	
+
 	colaCirujias.push({1, 7, "Rojo"});
 	colaCirujias.push({2, 8, "Normal"});
 	colaCirujias.push({3, 5, "Normal"});
 	colaCirujias.push({4, 11, "Rojo"});
 	colaCirujias.push({5, 9, "Verde"});
 	colaCirujias.push({6, 3, "Normal"});
-	
-	
+
 	int tiempoRestanteAtencion;
 	int tiempoUsadoTotalSala;
-	
-	while (!colaCirujias.empty()) 
+
+	while (!colaCirujias.empty())
 	{
-	    Pacientes pacienteActual = colaCirujias.front();
-	    
-	    // Eliminar el pacienteActual temporalmente
-	    colaCirujias.pop();
-	    
+		Pacientes pacienteActual = colaCirujias.front();
+
+		// Eliminar el pacienteActual temporalmente
+		colaCirujias.pop();
+
 		int tiempoSobrante;
-			
+
 		// Validar casos donde paciente tiempoAtencion es menor / mayor que el quantum (5)
-		if(pacienteActual.tiempoAtencion >= quantum){
+		if (pacienteActual.tiempoAtencion >= quantum)
+		{
 			// Ejem: 7 - 5 = 2 de tiempo sobrante;
 			tiempoSobrante = pacienteActual.tiempoAtencion - quantum;
 			tiempoRestanteAtencion = quantum;
-		}else{
+		}
+		else
+		{
 			// No necesita de mas iteraciones para completar la cirujia
 			tiempoSobrante = 0;
 			tiempoRestanteAtencion = pacienteActual.tiempoAtencion;
 		}
-		
-		tiempoUsadoTotalSala+=tiempoRestanteAtencion;
-	    
-	    
-	    if (pacienteActual.TipoAtencion == "Rojo" || pacienteActual.TipoAtencion == "Verde"){
-	    	 	
-			while(tiempoRestanteAtencion >= 0 && pacienteActual.tiempoAtencion != 0){		
+
+		tiempoUsadoTotalSala += tiempoRestanteAtencion;
+
+		if (pacienteActual.TipoAtencion == "Rojo" || pacienteActual.TipoAtencion == "Verde")
+		{
+
+			while (tiempoRestanteAtencion >= 0 && pacienteActual.tiempoAtencion != 0)
+			{
 				system("cls");
 				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
 				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
 				printf("TIEMPO QUE NECESITA EL PACIENTE PARA CIRUJIA: %d\n", pacienteActual.tiempoAtencion);
 				printf("TIEMPO RESTANTE: %d\n", tiempoRestanteAtencion);
-				
-				
+
 				esperar(1);
-				tiempoRestanteAtencion-=1;
+				tiempoRestanteAtencion -= 1;
 			}
-			
+
 			// Para saber si el proceso de cirujia continua o termino
-			if(tiempoSobrante != 0){
+			if (tiempoSobrante != 0)
+			{
 				system("cls");
 				printf("INTERRUPCION NORMAL\n");
 				printf("PACIENTE NUMERO %d EN PROCESO DE ATENCION\n", pacienteActual.numeroPaciente);
 				printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
 				esperar(5);
-				
+
 				pacienteActual.tiempoAtencion = tiempoSobrante;
 				colaCirujias.push(pacienteActual);
-			}else{
+			}
+			else
+			{
 				system("cls");
 				printf("INTERRUPCION NORMAL\n");
 				printf("PACIENTE NUMERO %d ATENDIDO CORRECTAMENTE\n", pacienteActual.numeroPaciente);
 				printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
 				esperar(5);
 			}
-				
-	    	
 		}
-		else{
-			
-			while(tiempoRestanteAtencion >= 0){		
+		else
+		{
+
+			while (tiempoRestanteAtencion >= 0)
+			{
 				system("cls");
 				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
 				printf("TIEMPO QUE NECESITA EL PACIENTE PARA CIRUJIA: %d\n", pacienteActual.tiempoAtencion);
 				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
 				printf("TIEMPO RESTANTE: %d\n", tiempoRestanteAtencion);
-				
-				
+
 				esperar(1);
-				tiempoRestanteAtencion-=1;
+				tiempoRestanteAtencion -= 1;
 			}
-			
+
 			// Como es normal no se agrega de nuevo a la Queue porque no necesita de su tiempo restante
 			system("cls");
 			printf("INTERRUPCION NORMAL\n");
@@ -249,66 +260,62 @@ void procesoCirujias(){
 			printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
 			printf("Nota: Por ser paciente normal no necesitara su tiempo sobrante\n");
 			esperar(5);
-
 		}
 
 		// Reiniciar tiempos restantes para demas pacientes e iteraciones
-		tiempoRestanteAtencion=0;
-		
+		tiempoRestanteAtencion = 0;
 	}
-	
-	system("cls");
-    printf("INTERRUPCION NORMAL\n");
-    printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %d tiempos\n", tiempoUsadoTotalSala);
-	system("pause");
 
+	system("cls");
+	printf("INTERRUPCION NORMAL\n");
+	printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %d tiempos\n", tiempoUsadoTotalSala);
+	system("pause");
 }
 
-
-int main(){
+int main()
+{
 	int contadorBucle = 0;
 	char procesoSeleccionado;
-	
-	while(true){
+
+	while (true)
+	{
 		system("cls");
-		
+
 		printf("MENU PRINCIPAL DE PROCESOS\n");
 		printf("1-Proceso atencion de citas\n");
 		printf("2-Proceso atencion de emergencias\n");
 		printf("3-Proceso atencion de cirugias\n");
 		printf("A-Finalizar proceso\n");
-		
+
 		procesoSeleccionado = _getch();
 		procesoSeleccionado = toupper(procesoSeleccionado);
-		
-		
-		if (procesoSeleccionado == 'A') {
-			
-            break; 
-        }
-		
-		
-		switch(procesoSeleccionado){
-			case '1':
-				procesoCitas();
-				break;
-			case '2': 
-				procesoEmergencias();
-				break;
-			case '3':
-				procesoCirujias();
-				break;
-			default:
-				system("cls");
-            	printf("Proceso seleccionado invalido!\n");
-            	esperar(1);
-				
+
+		if (procesoSeleccionado == 'A')
+		{
+
+			break;
 		}
-		
+
+		switch (procesoSeleccionado)
+		{
+		case '1':
+			procesoCitas();
+			break;
+		case '2':
+			procesoEmergencias();
+			break;
+		case '3':
+			procesoCirujias();
+			break;
+		default:
+			system("cls");
+			printf("Proceso seleccionado invalido!\n");
+			esperar(1);
+		}
+
 		contadorBucle++;
 	};
-	
+
 	printf("Procesos Finalizados\n");
 	return 0;
-	
 }
