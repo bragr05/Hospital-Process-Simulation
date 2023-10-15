@@ -1,0 +1,16 @@
+DEFINICIÓN DE TECLAS PARA TERMINAR PROCESOS:
+
+  MENU PRINCIPAL:
+    - Salir del programa con tecla A
+
+  PROCESO CITAS:
+    - Interrupción con tecla 'I' o 'i'
+
+  PROCESO EMERGENCIAS:
+    - Avanzar de paciente con tecla 'P' o 'p'
+    - Interrupción con tecla 'S' o 's'
+
+  PROCESO CIRUGÍAS:
+    - Según instrucciones no hay interrupciones
+
+

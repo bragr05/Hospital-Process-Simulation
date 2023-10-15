@@ -9,11 +9,6 @@
 using namespace std;
 
 // Metodos generales
-void esperar(int segundos)
-{
-	std::this_thread::sleep_for(std::chrono::seconds(segundos));
-}
-
 void limpiarBufferTeclas()
 {
 	while (_kbhit())
@@ -22,17 +17,20 @@ void limpiarBufferTeclas()
 	}
 }
 
+void esperar(int segundos)
+{
+	std::this_thread::sleep_for(std::chrono::seconds(segundos));
+}
+
 // Metodos procesos
 void procesoCitas()
 {
 	system("cls");
-	printf("1-Proceso atencion de cita seleccionado \n");
-	esperar(1);
-
 	int totalPacientesAtenididos = 0;
 	int tiempoAtencion = 0;
 	char interrupcionUsuario;
 	bool salirProceso = false;
+	int tiempoEjecucionHilo = 0;
 
 	for (int numPaciente = 0; numPaciente <= 10; numPaciente++)
 	{
@@ -48,8 +46,11 @@ void procesoCitas()
 				if (interrupcionUsuario == 'I')
 				{
 					system("cls");
+					printf("SALIENDO HILO CITAS...\n");
+					printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 					printf("INTERRUPCION POR USUARIO\n");
-					printf("TIEMPO ATENCION PACIENTE: %d\n", tiempoAtencion);
+					printf("Tiempo usado por el paciente: %d/5\n", tiempoAtencion);
 					printf("Interrupcion generada atendiendo al paciente numero %d\n", numPaciente);
 					system("pause");
 					salirProceso = true;
@@ -58,12 +59,16 @@ void procesoCitas()
 			}
 
 			system("cls");
+			printf("HILO CITAS EN EJECUCION\n");
+			printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 			printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoAtencion);
 			printf("Atentiendo paciente numero %d\n\n", numPaciente);
 			printf("Presione tecla I para terminar el proceso\n");
 
-			tiempoAtencion++;
 			esperar(1);
+			tiempoAtencion++;
+			tiempoEjecucionHilo++;
 		}
 
 		if (salirProceso)
@@ -73,10 +78,17 @@ void procesoCitas()
 
 		if (tiempoAtencion >= 5)
 		{
+			tiempoAtencion--;
+			tiempoEjecucionHilo--;
+
 			system("cls");
+			printf("HILO CITAS EN EJECUCION\n");
+			printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 			printf("INTERRUPCION NORMAL\n");
 			printf("Se atendio con exito al paciente numero %d\n", numPaciente);
-			esperar(2);
+			esperar(5);
+			tiempoEjecucionHilo += 5;
 		}
 
 		totalPacientesAtenididos = numPaciente;
@@ -88,6 +100,9 @@ void procesoCitas()
 	if (totalPacientesAtenididos == 10)
 	{
 		system("cls");
+		printf("SALIENDO HILO CITAS...\n");
+		printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 		printf("INTERRUPCION NORMAL\n");
 		printf("Todos los pacientes fueron atentidos con exito!");
 		system("pause");
@@ -272,6 +287,25 @@ void procesoCirujias()
 	system("pause");
 }
 
+// Declaración de funciones para seguimiento de hilos
+void hiloProcesoCitas()
+{
+	thread threadCitas;
+
+	system("cls");
+	printf("HILO CITAS CREADO\n--------------------------\n");
+	esperar(5);
+
+	threadCitas = thread(procesoCitas);
+
+	// Join elimina el hilo posterior a terminar su ejecución
+	threadCitas.join();
+
+	system("cls");
+	printf("HILO CITAS TERMINADO\n-----------------------\n");
+	esperar(5);
+}
+
 int main()
 {
 	int contadorBucle = 0;
@@ -292,14 +326,13 @@ int main()
 
 		if (procesoSeleccionado == 'A')
 		{
-
 			break;
 		}
 
 		switch (procesoSeleccionado)
 		{
 		case '1':
-			procesoCitas();
+			hiloProcesoCitas();
 			break;
 		case '2':
 			procesoEmergencias();
