@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <queue>
+#include <process.h>
 
 using namespace std;
 
@@ -45,6 +46,9 @@ void procesoCitas()
 
 				if (interrupcionUsuario == 'I')
 				{
+					tiempoAtencion--;
+					tiempoEjecucionHilo--;
+
 					system("cls");
 					printf("SALIENDO HILO CITAS...\n");
 					printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
@@ -88,7 +92,6 @@ void procesoCitas()
 			printf("INTERRUPCION NORMAL\n");
 			printf("Se atendio con exito al paciente numero %d\n", numPaciente);
 			esperar(5);
-			tiempoEjecucionHilo += 5;
 		}
 
 		totalPacientesAtenididos = numPaciente;
@@ -111,17 +114,17 @@ void procesoCitas()
 
 void procesoEmergencias()
 {
-	system("cls");
-	printf("2-Proceso atencion de emergencias\n");
-	esperar(1);
-
 	int totalPacientesAtendidos = 0;
 	int tiempoProceso = 0;
 	char interrupcionUsuario;
 	int numPaciente = 0;
+	int tiempoEjecucionHilo = 0;
 
 	while (tiempoProceso <= 25 && totalPacientesAtendidos < 10)
 	{
+		system("cls");
+		printf("HILO CITAS EN EJECUCION\n");
+		printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
 
 		if (_kbhit())
 		{
@@ -131,10 +134,12 @@ void procesoEmergencias()
 			if (interrupcionUsuario == 'S' && tiempoProceso >= 20)
 			{
 				system("cls");
+				printf("SALIENDO HILO CITAS...\n");
+				printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 				printf("INTERRUPCION POR USUARIO\n");
-				printf("TIEMPO PROCESO: %d\n", tiempoProceso);
 				printf("Interrupcion generada atendiendo al paciente numero %d\n", numPaciente);
-				esperar(4);
+				esperar(5);
 				break;
 			}
 			else if (interrupcionUsuario == 'P')
@@ -144,8 +149,6 @@ void procesoEmergencias()
 			}
 		}
 
-		system("cls");
-		printf("TIEMPO ATENCION ACTUAL: %d\n", tiempoProceso);
 		printf("Atendiendo paciente numero %d\n\n", numPaciente);
 
 		printf("Presione tecla P para avanzar paciente\n");
@@ -155,12 +158,17 @@ void procesoEmergencias()
 
 		esperar(1);
 		tiempoProceso++;
+		tiempoEjecucionHilo++;
 	}
 
+	tiempoEjecucionHilo--;
 	system("cls");
+	printf("SALIENDO HILO CITAS...\n");
+
+	printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 	printf("INTERRUPCION NORMAL\n");
-	printf("TIEMPO TOTAL PROCESO: %d\n", tiempoProceso - 1);
-	printf("PACIENTES TOTALES ATENDIDOS: %d\n", totalPacientesAtendidos);
+	printf("Pacientes totales atendidos: %d\n", totalPacientesAtendidos);
 	system("pause");
 }
 
@@ -306,6 +314,23 @@ void hiloProcesoCitas()
 	esperar(5);
 }
 
+void hiloProcesoEmergencias()
+{
+	thread threadEmergencias;
+
+	system("cls");
+	printf("HILO EMERGENCIAS CREADO\n------------------------\n");
+	esperar(5);
+
+	threadEmergencias = thread(procesoEmergencias);
+
+	threadEmergencias.join();
+
+	system("cls");
+	printf("HILO EMERGENCIAS TERMINADO\n---------------------------\n");
+	esperar(5);
+}
+
 int main()
 {
 	int contadorBucle = 0;
@@ -335,7 +360,7 @@ int main()
 			hiloProcesoCitas();
 			break;
 		case '2':
-			procesoEmergencias();
+			hiloProcesoEmergencias();
 			break;
 		case '3':
 			procesoCirujias();
