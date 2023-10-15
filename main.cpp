@@ -123,7 +123,7 @@ void procesoEmergencias()
 	while (tiempoProceso <= 25 && totalPacientesAtendidos < 10)
 	{
 		system("cls");
-		printf("HILO CITAS EN EJECUCION\n");
+		printf("HILO EMERGENCIAS EN EJECUCION\n");
 		printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
 
 		if (_kbhit())
@@ -134,7 +134,7 @@ void procesoEmergencias()
 			if (interrupcionUsuario == 'S' && tiempoProceso >= 20)
 			{
 				system("cls");
-				printf("SALIENDO HILO CITAS...\n");
+				printf("SALIENDO HILO EMERGENCIAS...\n");
 				printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
 
 				printf("INTERRUPCION POR USUARIO\n");
@@ -163,7 +163,7 @@ void procesoEmergencias()
 
 	tiempoEjecucionHilo--;
 	system("cls");
-	printf("SALIENDO HILO CITAS...\n");
+	printf("SALIENDO HILO EMERGENCIAS...\n");
 
 	printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
 
@@ -182,10 +182,7 @@ struct Pacientes
 
 void procesoCirujias()
 {
-	system("cls");
-	printf("3-Proceso atencion de cirugias\n");
-	esperar(1);
-
+	int tiempoEjecucionHilo = 0;
 	int quantum = 5;
 
 	queue<Pacientes> colaCirujias;
@@ -198,7 +195,6 @@ void procesoCirujias()
 	colaCirujias.push({6, 3, "Normal"});
 
 	int tiempoRestanteAtencion;
-	int tiempoUsadoTotalSala;
 
 	while (!colaCirujias.empty())
 	{
@@ -223,14 +219,15 @@ void procesoCirujias()
 			tiempoRestanteAtencion = pacienteActual.tiempoAtencion;
 		}
 
-		tiempoUsadoTotalSala += tiempoRestanteAtencion;
-
 		if (pacienteActual.TipoAtencion == "Rojo" || pacienteActual.TipoAtencion == "Verde")
 		{
 
 			while (tiempoRestanteAtencion >= 0 && pacienteActual.tiempoAtencion != 0)
 			{
 				system("cls");
+				printf("HILO CIRUGIAS EN EJECUCION\n");
+				printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
 				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
 				printf("TIEMPO QUE NECESITA EL PACIENTE PARA CIRUJIA: %d\n", pacienteActual.tiempoAtencion);
@@ -238,12 +235,17 @@ void procesoCirujias()
 
 				esperar(1);
 				tiempoRestanteAtencion -= 1;
+				tiempoEjecucionHilo++;
 			}
 
+			tiempoEjecucionHilo--;
 			// Para saber si el proceso de cirujia continua o termino
 			if (tiempoSobrante != 0)
 			{
 				system("cls");
+				printf("HILO CIRUGIAS EN EJECUCION\n");
+				printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 				printf("INTERRUPCION NORMAL\n");
 				printf("PACIENTE NUMERO %d EN PROCESO DE ATENCION\n", pacienteActual.numeroPaciente);
 				printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
@@ -255,6 +257,9 @@ void procesoCirujias()
 			else
 			{
 				system("cls");
+				printf("HILO CIRUGIAS EN EJECUCION\n");
+				printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 				printf("INTERRUPCION NORMAL\n");
 				printf("PACIENTE NUMERO %d ATENDIDO CORRECTAMENTE\n", pacienteActual.numeroPaciente);
 				printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
@@ -267,6 +272,9 @@ void procesoCirujias()
 			while (tiempoRestanteAtencion >= 0)
 			{
 				system("cls");
+				printf("HILO CIRUGIAS EN EJECUCION\n");
+				printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 				printf("ATENDIENDO PACIENTE NUMERO: %d\n", pacienteActual.numeroPaciente);
 				printf("TIEMPO QUE NECESITA EL PACIENTE PARA CIRUJIA: %d\n", pacienteActual.tiempoAtencion);
 				printf("PACIENTE TIPO: %s\n\n", pacienteActual.TipoAtencion.c_str());
@@ -274,10 +282,15 @@ void procesoCirujias()
 
 				esperar(1);
 				tiempoRestanteAtencion -= 1;
+				tiempoEjecucionHilo++;
 			}
 
+			tiempoEjecucionHilo--;
 			// Como es normal no se agrega de nuevo a la Queue porque no necesita de su tiempo restante
 			system("cls");
+			printf("HILO CIRUGIAS EN EJECUCION\n");
+			printf("TIEMPO ACTUAL DE EJECUCION: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 			printf("INTERRUPCION NORMAL\n");
 			printf("PACIENTE NUMERO %d ATENDIDO CORRECTAMENTE\n", pacienteActual.numeroPaciente);
 			printf("TIEMPO SOBRANTE: %d \n\n", tiempoSobrante);
@@ -290,8 +303,11 @@ void procesoCirujias()
 	}
 
 	system("cls");
+	printf("SALIENDO HILO CIRUGIAS...\n");
+	printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
+
 	printf("INTERRUPCION NORMAL\n");
-	printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %d tiempos\n", tiempoUsadoTotalSala);
+	printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %d tiempos\n", tiempoEjecucionHilo);
 	system("pause");
 }
 
@@ -331,6 +347,23 @@ void hiloProcesoEmergencias()
 	esperar(5);
 }
 
+void hiloProcesoCirugias()
+{
+	thread threadCirugias;
+
+	system("cls");
+	printf("HILO DE CIRUGIAS CREADO\n------------------------\n");
+	esperar(5);
+
+	threadCirugias = thread(procesoCirujias);
+
+	threadCirugias.join();
+
+	system("cls");
+	printf("HILO DE CIRUGIAS TERMINADO\n---------------------------");
+	esperar(5);
+}
+
 int main()
 {
 	int contadorBucle = 0;
@@ -363,7 +396,7 @@ int main()
 			hiloProcesoEmergencias();
 			break;
 		case '3':
-			procesoCirujias();
+			hiloProcesoCirugias();
 			break;
 		default:
 			system("cls");
