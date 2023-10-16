@@ -9,6 +9,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <cstdlib>
+#include <string>
 
 using namespace std;
 
@@ -33,7 +34,7 @@ void esperar(int segundos)
 	std::this_thread::sleep_for(std::chrono::seconds(segundos));
 }
 
-bool reservarMemoria()
+bool reservarMemoria(const string &nombreProceso)
 {
 	unique_lock<mutex> lock(memoria_mutex);
 	int tiempoEspera = 0;
@@ -42,20 +43,21 @@ bool reservarMemoria()
 	while (!areaMemoriaDisponible && tiempoEspera <= 5)
 	{
 		system("cls");
-		printf("TIEMPO ESPERA: %ds\n----------------------------------\n\n", tiempoEspera);
-		printf("RESERVANDO MEMORIA...\n");
+		printf("TIEMPO ESPERA: %ds\n-----------------------------------\n", tiempoEspera);
+		printf("RESERVANDO MEMORIA PARA PROCESO: %s...\n", nombreProceso.c_str());
 		tiempoEspera++;
 
 		// Reservar el espacio en memoria
 		MEMORIA_RESERVADA = malloc(MEMORY_SIZE);
 
-		cv.wait_for(lock, std::chrono::seconds(1));
+		cv.wait_for(lock, chrono::seconds(1));
 	}
 
 	// Si areaMemoriaDisponible nunca se coloco en true entonces volver al menu principal
 	if (!areaMemoriaDisponible)
 	{
 		system("cls");
+		printf("ERROR RUTA DATOS PROCESO: %s\n", nombreProceso.c_str());
 		printf("Tiempo de espera agotado. Volviendo al menu principal...\n");
 		esperar(5);
 		return false;
@@ -64,13 +66,13 @@ bool reservarMemoria()
 	areaMemoriaDisponible = false;
 
 	system("cls");
-	printf("MEMORIA RESERVADA\n-----------------------\n");
+	printf("MEMORIA RESERVADA PARA PROCESO: %s\n-----------------------------------\n", nombreProceso.c_str());
 	printf("TOTAL DE MEMORIA RESERVADA: %zu bytes\n", MEMORY_SIZE);
 	esperar(5);
 	return true;
 }
 
-void liberarMemoria()
+void liberarMemoria(const string &nombreProceso)
 {
 	unique_lock<mutex> lock(memoria_mutex);
 
@@ -79,7 +81,7 @@ void liberarMemoria()
 	cv.notify_all();
 
 	free(MEMORIA_RESERVADA);
-	printf("MEMORIA LIBERADA\n-----------------------\n");
+	printf("MEMORIA LIBERADA PARA PROCESO %s\n-----------------------------------\n", nombreProceso.c_str());
 	printf("TOTAL DE MEMORIA LIBERADA: %zu bytes\n", MEMORY_SIZE);
 	esperar(5);
 }
@@ -375,7 +377,8 @@ void procesoCirujias()
 // Declaración de funciones para seguimiento de hilos
 void hiloProcesoCitas()
 {
-	bool memoriaReservada = reservarMemoria();
+	string nombreProceso = "CITAS";
+	bool memoriaReservada = reservarMemoria(nombreProceso);
 
 	// Si no se pudo reservar memoria regresar el menu principal
 	if (!memoriaReservada)
@@ -396,13 +399,14 @@ void hiloProcesoCitas()
 
 	system("cls");
 	printf("HILO CITAS TERMINADO\n-----------------------\n");
-	liberarMemoria();
+	liberarMemoria(nombreProceso);
 	esperar(5);
 }
 
 void hiloProcesoEmergencias()
 {
-	bool memoriaReservada = reservarMemoria();
+	string nombreProceso = "EMERGENCIAS";
+	bool memoriaReservada = reservarMemoria(nombreProceso);
 
 	// Si no se pudo reservar memoria regresar el menu principal
 	if (!memoriaReservada)
@@ -422,13 +426,14 @@ void hiloProcesoEmergencias()
 
 	system("cls");
 	printf("HILO EMERGENCIAS TERMINADO\n---------------------------\n");
-	liberarMemoria();
+	liberarMemoria(nombreProceso);
 	esperar(5);
 }
 
 void hiloProcesoCirugias()
 {
-	bool memoriaReservada = reservarMemoria();
+	string nombreProceso = "CIRUGIAS";
+	bool memoriaReservada = reservarMemoria(nombreProceso);
 
 	// Si no se pudo reservar memoria regresar el menu principal
 	if (!memoriaReservada)
@@ -448,7 +453,7 @@ void hiloProcesoCirugias()
 
 	system("cls");
 	printf("HILO DE CIRUGIAS TERMINADO\n---------------------------\n");
-	liberarMemoria();
+	liberarMemoria(nombreProceso);
 	esperar(5);
 }
 
