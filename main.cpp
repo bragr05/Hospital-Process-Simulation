@@ -8,8 +8,12 @@
 #include <process.h>
 #include <mutex>
 #include <condition_variable>
+#include <cstdlib>
 
 using namespace std;
+
+size_t MEMORY_SIZE = 1024;
+void *MEMORIA_RESERVADA;
 
 std::mutex memoria_mutex;
 std::condition_variable cv;
@@ -41,6 +45,10 @@ bool reservarMemoria()
 		printf("TIEMPO ESPERA: %ds\n----------------------------------\n\n", tiempoEspera);
 		printf("RESERVANDO MEMORIA...\n");
 		tiempoEspera++;
+
+		// Reservar el espacio en memoria
+		MEMORIA_RESERVADA = malloc(MEMORY_SIZE);
+
 		cv.wait_for(lock, std::chrono::seconds(1));
 	}
 
@@ -57,6 +65,7 @@ bool reservarMemoria()
 
 	system("cls");
 	printf("MEMORIA RESERVADA\n-----------------------\n");
+	printf("TOTAL DE MEMORIA RESERVADA: %zu bytes\n", MEMORY_SIZE);
 	esperar(5);
 	return true;
 }
@@ -69,7 +78,9 @@ void liberarMemoria()
 
 	cv.notify_all();
 
+	free(MEMORIA_RESERVADA);
 	printf("MEMORIA LIBERADA\n-----------------------\n");
+	printf("TOTAL DE MEMORIA LIBERADA: %zu bytes\n", MEMORY_SIZE);
 	esperar(5);
 }
 
@@ -202,7 +213,7 @@ void procesoEmergencias()
 		printf("Atendiendo paciente numero %d\n\n", numPaciente);
 
 		printf("Presione tecla P para avanzar paciente\n");
-		printf("A los 20 tiempos puede finalizar el proceso con la tecla S\n");
+		printf("A los 20 segundos puede finalizar el proceso con la tecla S\n");
 
 		limpiarBufferTeclas();
 
@@ -357,7 +368,7 @@ void procesoCirujias()
 	printf("TIEMPO TOTAL EJECUCION HILO: %d s\n----------------------------------\n\n", tiempoEjecucionHilo);
 
 	printf("INTERRUPCION NORMAL\n");
-	printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %d tiempos\n", tiempoEjecucionHilo);
+	printf("TIEMPO TOTAL EMPLEADO EN LA SALA: %ds\n", tiempoEjecucionHilo);
 	system("pause");
 }
 
@@ -391,6 +402,14 @@ void hiloProcesoCitas()
 
 void hiloProcesoEmergencias()
 {
+	bool memoriaReservada = reservarMemoria();
+
+	// Si no se pudo reservar memoria regresar el menu principal
+	if (!memoriaReservada)
+	{
+		return;
+	}
+
 	thread threadEmergencias;
 
 	system("cls");
@@ -403,11 +422,20 @@ void hiloProcesoEmergencias()
 
 	system("cls");
 	printf("HILO EMERGENCIAS TERMINADO\n---------------------------\n");
+	liberarMemoria();
 	esperar(5);
 }
 
 void hiloProcesoCirugias()
 {
+	bool memoriaReservada = reservarMemoria();
+
+	// Si no se pudo reservar memoria regresar el menu principal
+	if (!memoriaReservada)
+	{
+		return;
+	}
+
 	thread threadCirugias;
 
 	system("cls");
@@ -419,7 +447,8 @@ void hiloProcesoCirugias()
 	threadCirugias.join();
 
 	system("cls");
-	printf("HILO DE CIRUGIAS TERMINADO\n---------------------------");
+	printf("HILO DE CIRUGIAS TERMINADO\n---------------------------\n");
+	liberarMemoria();
 	esperar(5);
 }
 
