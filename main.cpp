@@ -6,8 +6,14 @@
 #include <chrono>
 #include <queue>
 #include <process.h>
+#include <mutex>
+#include <condition_variable>
 
 using namespace std;
+
+std::mutex memoria_mutex;
+std::condition_variable cv;
+bool areaMemoriaDisponible = true;
 
 // Metodos generales
 void limpiarBufferTeclas()
@@ -21,6 +27,50 @@ void limpiarBufferTeclas()
 void esperar(int segundos)
 {
 	std::this_thread::sleep_for(std::chrono::seconds(segundos));
+}
+
+bool reservarMemoria()
+{
+	unique_lock<mutex> lock(memoria_mutex);
+	int tiempoEspera = 0;
+
+	// definir un contador de espera, si este no
+	while (!areaMemoriaDisponible && tiempoEspera <= 5)
+	{
+		system("cls");
+		printf("TIEMPO ESPERA: %ds\n----------------------------------\n\n", tiempoEspera);
+		printf("RESERVANDO MEMORIA...\n");
+		tiempoEspera++;
+		cv.wait_for(lock, std::chrono::seconds(1));
+	}
+
+	// Si areaMemoriaDisponible nunca se coloco en true entonces volver al menu principal
+	if (!areaMemoriaDisponible)
+	{
+		system("cls");
+		printf("Tiempo de espera agotado. Volviendo al menu principal...\n");
+		esperar(5);
+		return false;
+	}
+
+	areaMemoriaDisponible = false;
+
+	system("cls");
+	printf("MEMORIA RESERVADA\n-----------------------\n");
+	esperar(5);
+	return true;
+}
+
+void liberarMemoria()
+{
+	unique_lock<mutex> lock(memoria_mutex);
+
+	areaMemoriaDisponible = true;
+
+	cv.notify_all();
+
+	printf("MEMORIA LIBERADA\n-----------------------\n");
+	esperar(5);
 }
 
 // Metodos procesos
@@ -314,6 +364,14 @@ void procesoCirujias()
 // Declaración de funciones para seguimiento de hilos
 void hiloProcesoCitas()
 {
+	bool memoriaReservada = reservarMemoria();
+
+	// Si no se pudo reservar memoria regresar el menu principal
+	if (!memoriaReservada)
+	{
+		return;
+	}
+
 	thread threadCitas;
 
 	system("cls");
@@ -327,6 +385,7 @@ void hiloProcesoCitas()
 
 	system("cls");
 	printf("HILO CITAS TERMINADO\n-----------------------\n");
+	liberarMemoria();
 	esperar(5);
 }
 
