@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <string>
 #include <iomanip>
+#include <windows.h>
 
 using namespace std;
 
@@ -96,6 +97,12 @@ void imprimirInfoHilo(string NombreHilo, int tiempoEjecucionHilo, bool limpiarPa
 
 	printf("\t\t%s %ds\n", NombreHilo.c_str(), tiempoEjecucionHilo);
 	printf("-------------------------------------------------------------\n\n");
+}
+
+void cambiarColor(int codColor)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, codColor);
 }
 
 // Metodos procesos
@@ -465,12 +472,13 @@ int main()
 	while (true)
 	{
 		system("cls");
-
+		cambiarColor(14);
 		printf("\t\tMENU PRINCIPAL DE PROCESOS\n-------------------------------------------------------------\n");
 		printf("\t1-Proceso atencion de citas\n");
 		printf("\t2-Proceso atencion de emergencias\n");
 		printf("\t3-Proceso atencion de cirugias\n\n");
 		printf("\tA-Finalizar proceso\n");
+		cambiarColor(7);
 
 		procesoSeleccionado = _getch();
 		procesoSeleccionado = toupper(procesoSeleccionado);
